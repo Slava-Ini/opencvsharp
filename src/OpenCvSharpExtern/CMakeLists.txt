@@ -9,7 +9,15 @@ IF(APPLE)
     link_directories(/usr/local/lib)
 ENDIF()
 
-file(GLOB OPENCVSHARP_FILES *.cpp)
+# Only compile bindings for the two modules PaddleOCR actually uses.
+# core: Mat, basic ops. imgproc: CvtColor, Resize, CopyMakeBorder, FindContours, MinAreaRect.
+# std_string / std_vector: marshaling helpers required by both.
+set(OPENCVSHARP_FILES
+    core.cpp
+    imgproc.cpp
+    std_string.cpp
+    std_vector.cpp
+)
 
 # Resolve Protobuf target before OpenCV config is loaded.
 if(APPLE)
@@ -30,7 +38,7 @@ if(WIN32)
 	endif()
 endif()
 
-find_package(OpenCV REQUIRED COMPONENTS core imgproc imgcodecs calib3d features2d flann objdetect photo ml video dnn stitching highgui videoio bgsegm face tracking xfeatures2d ximgproc xobjdetect xphoto wechat_qrcode aruco text)
+find_package(OpenCV REQUIRED COMPONENTS core imgproc)
 
 # iconv support isn't automatic on some systems
 find_package(Iconv QUIET)
@@ -53,6 +61,16 @@ if(OpenCV_FOUND)
 		add_library(OpenCvSharpExtern SHARED ${OPENCVSHARP_FILES})
 		target_link_libraries(OpenCvSharpExtern ${OpenCV_LIBRARIES})
 	endif()
+
+	# Suppress includes for disabled OpenCV modules.
+	# include_opencv.h already guards these behind NO_xxx defines.
+	target_compile_definitions(OpenCvSharpExtern PRIVATE
+		NO_HIGHGUI=1
+		NO_VIDEO=1
+		NO_STITCHING=1
+		NO_ML=1
+		NO_CONTRIB=1
+	)
 
 	if(Iconv_FOUND)
 		target_link_libraries(OpenCvSharpExtern Iconv::Iconv)
