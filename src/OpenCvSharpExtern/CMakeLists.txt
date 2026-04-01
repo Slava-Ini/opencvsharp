@@ -30,7 +30,7 @@ if(WIN32)
 	endif()
 endif()
 
-find_package(OpenCV REQUIRED)
+find_package(OpenCV REQUIRED COMPONENTS core imgproc imgcodecs calib3d features2d flann objdetect photo ml video dnn stitching highgui videoio bgsegm face tracking xfeatures2d ximgproc xobjdetect xphoto wechat_qrcode aruco text)
 
 # iconv support isn't automatic on some systems
 find_package(Iconv QUIET)

@@ -41,8 +41,20 @@ set(BUILD_opencv_surface_matching          OFF CACHE BOOL "" FORCE)
 set(BUILD_opencv_videostab                 OFF CACHE BOOL "" FORCE)
 set(BUILD_opencv_wechat_qrcode             ON  CACHE BOOL "" FORCE)
 
-# Require Tesseract OCR (provided via vcpkg on Windows/manylinux, libtesseract-dev on Linux ARM)
-set(WITH_TESSERACT ON  CACHE BOOL "" FORCE)
+# Tesseract disabled — app uses PaddleOCR, not Tesseract. Avoids dynamic libtesseract
+# dependency which has different SONAME across distros (libtesseract.so.4 on Ubuntu 22,
+# libtesseract.so.5 on Arch/Ubuntu 24).
+set(WITH_TESSERACT OFF CACHE BOOL "" FORCE)
+
+# FFmpeg disabled — app captures screen frames via ThatCapture, not video files.
+# Avoids dynamic libavcodec/libavformat/libavutil/libswscale dependencies which have
+# different SONAME across distros (FFmpeg 4.x on Ubuntu 22, 5.x on Debian 12, 6.x on Arch).
+set(WITH_FFMPEG OFF CACHE BOOL "" FORCE)
+
+# Force OpenCV to build its own bundled static versions of image libs instead of linking
+# against system versions, which have different SONAMEs across distros.
+set(BUILD_TIFF ON CACHE BOOL "" FORCE)
+set(BUILD_JPEG ON CACHE BOOL "" FORCE)
 
 # Disable unused 3rd-party integrations
 set(WITH_GSTREAMER OFF CACHE BOOL "" FORCE)

@@ -2,7 +2,7 @@
 ARG OPENCV_VERSION=4.13.0
 
 ########## Build OpenCV ##########
-FROM ubuntu:noble AS opencv-builder
+FROM ubuntu:jammy AS opencv-builder
 
 ARG OPENCV_VERSION
 ENV DEBIAN_FRONTEND=noninteractive
